@@ -13,15 +13,18 @@ function parallaxUpdate(evt, obj){
     if(st + vh < ot) return;
     if(st > ot + oh) return;
 
-    var parallax_ratio = parseFloat($(obj).attr('data-parallax-ratio'));
     var iw = parseInt($(obj).attr('data-parallax-img-width'));
     var ih = parseInt($(obj).attr('data-parallax-img-height'));
+    var parallax_ratio = parseFloat($(obj).attr('data-parallax-ratio'));
+    parallax_ratio = (isNaN(parallax_ratio)) ? 1 : parallax_ratio;
+    var expand_ratio = parseFloat($(obj).attr('data-parallax-expand'));
+    expand_ratio = (isNaN(expand_ratio)) ? 1 : expand_ratio;
 
     // Calculate image size
-    var img_wh = (iw / ih > 0);
-    var ratio = (img_wh) ? (iw / ow) : (ih / oh);
-    var fw = iw / ratio;
-    var fh = ih / ratio;
+    var img_wh = ((iw / ih) < (ow / oh));
+    var img_ratio = (img_wh) ? (iw / ow) : (ih / oh);
+    var fw = iw / img_ratio * expand_ratio;
+    var fh = ih / img_ratio * expand_ratio;
     var fsize = fw + 'px ' + fh + 'px';
 
     // Calculate scroll delta
@@ -29,8 +32,10 @@ function parallaxUpdate(evt, obj){
     var m = vh + oh;
     var d = t / m;
 
+    // Vertical parallax only - centralizing image horizontally
+    var px = ((fw - ow) / 2) * -1;
+    
     // Calculate image position
-    var px = 0; // Vertical position only
     var py = 0;
     py = ((fh - oh) * d) * -1;
     var fpos = px + 'px ' + py + 'px';
